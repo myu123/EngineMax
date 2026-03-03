@@ -372,10 +372,21 @@ static const Vertex roomVerts[] = {
     {-6.0f, 4.0f,  6.0f, 0.0f, 6.0f}, { 6.0f, 4.0f,  6.0f, 6.0f, 6.0f},
     { 6.0f, 4.0f, -6.0f, 6.0f, 0.0f}, { 6.0f, 4.0f, -6.0f, 6.0f, 0.0f},
     {-6.0f, 4.0f, -6.0f, 0.0f, 0.0f}, {-6.0f, 4.0f,  6.0f, 0.0f, 6.0f},
-    // North wall (z = -6)
-    {-6.0f, 0.0f, -6.0f, 0.0f, 0.0f}, { 6.0f, 4.0f, -6.0f, 6.0f, 2.0f},
-    { 6.0f, 0.0f, -6.0f, 6.0f, 0.0f}, { 6.0f, 4.0f, -6.0f, 6.0f, 2.0f},
-    {-6.0f, 0.0f, -6.0f, 0.0f, 0.0f}, {-6.0f, 4.0f, -6.0f, 0.0f, 2.0f},
+    // North wall (z = -6) — with hole for portal A
+    // Portal A opening: x ∈ [-2.9, -1.1], y ∈ [0.0, 2.8]
+    // UV mapping: u = (x+6)/2, v = y/2
+    // Left piece: x ∈ [-6, -2.9]
+    {-6.0f, 0.0f, -6.0f,  0.0f,  0.0f}, {-2.9f, 4.0f, -6.0f,  1.55f, 2.0f},
+    {-2.9f, 0.0f, -6.0f,  1.55f, 0.0f}, {-2.9f, 4.0f, -6.0f,  1.55f, 2.0f},
+    {-6.0f, 0.0f, -6.0f,  0.0f,  0.0f}, {-6.0f, 4.0f, -6.0f,  0.0f,  2.0f},
+    // Right piece: x ∈ [-1.1, 6]
+    {-1.1f, 0.0f, -6.0f,  2.45f, 0.0f}, { 6.0f, 4.0f, -6.0f,  6.0f,  2.0f},
+    { 6.0f, 0.0f, -6.0f,  6.0f,  0.0f}, { 6.0f, 4.0f, -6.0f,  6.0f,  2.0f},
+    {-1.1f, 0.0f, -6.0f,  2.45f, 0.0f}, {-1.1f, 4.0f, -6.0f,  2.45f, 2.0f},
+    // Top piece: x ∈ [-2.9, -1.1], y ∈ [2.8, 4]
+    {-2.9f, 2.8f, -6.0f,  1.55f, 1.4f}, {-1.1f, 4.0f, -6.0f,  2.45f, 2.0f},
+    {-1.1f, 2.8f, -6.0f,  2.45f, 1.4f}, {-1.1f, 4.0f, -6.0f,  2.45f, 2.0f},
+    {-2.9f, 2.8f, -6.0f,  1.55f, 1.4f}, {-2.9f, 4.0f, -6.0f,  1.55f, 2.0f},
     // South wall (z = +6)
     { 6.0f, 0.0f,  6.0f, 0.0f, 0.0f}, {-6.0f, 4.0f,  6.0f, 6.0f, 2.0f},
     {-6.0f, 0.0f,  6.0f, 6.0f, 0.0f}, {-6.0f, 4.0f,  6.0f, 6.0f, 2.0f},
@@ -384,10 +395,21 @@ static const Vertex roomVerts[] = {
     {-6.0f, 0.0f,  6.0f, 0.0f, 0.0f}, {-6.0f, 4.0f, -6.0f, 6.0f, 2.0f},
     {-6.0f, 0.0f, -6.0f, 6.0f, 0.0f}, {-6.0f, 4.0f, -6.0f, 6.0f, 2.0f},
     {-6.0f, 0.0f,  6.0f, 0.0f, 0.0f}, {-6.0f, 4.0f,  6.0f, 0.0f, 2.0f},
-    // East wall (x = +6)
-    { 6.0f, 0.0f, -6.0f, 0.0f, 0.0f}, { 6.0f, 4.0f,  6.0f, 6.0f, 2.0f},
-    { 6.0f, 0.0f,  6.0f, 6.0f, 0.0f}, { 6.0f, 4.0f,  6.0f, 6.0f, 2.0f},
-    { 6.0f, 0.0f, -6.0f, 0.0f, 0.0f}, { 6.0f, 4.0f, -6.0f, 0.0f, 2.0f},
+    // East wall (x = +6) — with hole for portal B
+    // Portal B opening: z ∈ [-2.9, -1.1], y ∈ [0.0, 2.8]
+    // UV mapping: u = (z+6)/2, v = y/2
+    // Left piece: z ∈ [-6, -2.9]
+    { 6.0f, 0.0f, -6.0f,  0.0f,  0.0f}, { 6.0f, 4.0f, -2.9f,  1.55f, 2.0f},
+    { 6.0f, 0.0f, -2.9f,  1.55f, 0.0f}, { 6.0f, 4.0f, -2.9f,  1.55f, 2.0f},
+    { 6.0f, 0.0f, -6.0f,  0.0f,  0.0f}, { 6.0f, 4.0f, -6.0f,  0.0f,  2.0f},
+    // Right piece: z ∈ [-1.1, 6]
+    { 6.0f, 0.0f, -1.1f,  2.45f, 0.0f}, { 6.0f, 4.0f,  6.0f,  6.0f,  2.0f},
+    { 6.0f, 0.0f,  6.0f,  6.0f,  0.0f}, { 6.0f, 4.0f,  6.0f,  6.0f,  2.0f},
+    { 6.0f, 0.0f, -1.1f,  2.45f, 0.0f}, { 6.0f, 4.0f, -1.1f,  2.45f, 2.0f},
+    // Top piece: z ∈ [-2.9, -1.1], y ∈ [2.8, 4]
+    { 6.0f, 2.8f, -2.9f,  1.55f, 1.4f}, { 6.0f, 4.0f, -1.1f,  2.45f, 2.0f},
+    { 6.0f, 2.8f, -1.1f,  2.45f, 1.4f}, { 6.0f, 4.0f, -1.1f,  2.45f, 2.0f},
+    { 6.0f, 2.8f, -2.9f,  1.55f, 1.4f}, { 6.0f, 4.0f, -2.9f,  1.55f, 2.0f},
 };
 static const int floorVertOffset   = 0;
 static const int ceilingVertOffset = 6;
@@ -478,7 +500,7 @@ static void renderScene(Shader& shader, const glm::mat4& view, const glm::mat4& 
     glDrawArrays(GL_TRIANGLES, ceilingVertOffset, 6);
 
     glBindTexture(GL_TEXTURE_2D, wallTex);
-    glDrawArrays(GL_TRIANGLES, wallVertOffset, 24);
+    glDrawArrays(GL_TRIANGLES, wallVertOffset, 48);
 
     // Cubes
     glBindVertexArray(cubeVAO);
@@ -663,6 +685,14 @@ int main() {
             if (camera.position.z < minZ && !nearPortalA) camera.position.z = minZ;  // north wall (portal A)
             if (camera.position.z > maxZ) camera.position.z = maxZ;
 
+            // Even in the portal zone, don't let the player drift past the
+            // actual wall surface.  Without this, rapid strafing at an angle
+            // gradually pushes them behind the wall, breaking rendering.
+            if (nearPortalA && camera.position.z < -ROOM_HALF)
+                camera.position.z = -ROOM_HALF;
+            if (nearPortalB && camera.position.x > ROOM_HALF)
+                camera.position.x = ROOM_HALF;
+
             // Cube collisions
             for (int i = 0; i < sceneCubeCount; ++i) {
                 const auto& obj = sceneCubes[i];
@@ -683,36 +713,39 @@ int main() {
 
             // ----- Portal teleportation -----
             teleportCooldown -= dt;
-            if (teleportCooldown <= 0.0f && gPortalA && gPortalB) {
+            if (gPortalA && gPortalB) {
                 float distA = portalSignedDist(camera.position, *gPortalA);
                 float distB = portalSignedDist(camera.position, *gPortalB);
 
-                // Crossed portal A? (positive → negative = walked through from room side)
-                if (prevDistA > 0.0f && distA <= 0.0f && isInPortalBounds(camera.position, *gPortalA)) {
-                    teleportPlayer(*gPortalA, *gPortalB);
-                    teleportCooldown = 0.3f;
-                    // Reset tracking so we don't re-trigger at destination
-                    prevDistA = portalSignedDist(camera.position, *gPortalA);
-                    prevDistB = portalSignedDist(camera.position, *gPortalB);
+                if (teleportCooldown <= 0.0f) {
+                    // Crossed portal A? (positive → negative = walked through from room side)
+                    if (prevDistA > 0.0f && distA <= 0.0f && isInPortalBounds(camera.position, *gPortalA)) {
+                        teleportPlayer(*gPortalA, *gPortalB);
+                        teleportCooldown = 0.15f;
+                        // Re-sample after teleport so prevDist is fresh at new location
+                        distA = portalSignedDist(camera.position, *gPortalA);
+                        distB = portalSignedDist(camera.position, *gPortalB);
+                    }
+                    // Crossed portal B?
+                    else if (prevDistB > 0.0f && distB <= 0.0f && isInPortalBounds(camera.position, *gPortalB)) {
+                        teleportPlayer(*gPortalB, *gPortalA);
+                        teleportCooldown = 0.15f;
+                        distA = portalSignedDist(camera.position, *gPortalA);
+                        distB = portalSignedDist(camera.position, *gPortalB);
+                    }
                 }
-                // Crossed portal B?
-                else if (prevDistB > 0.0f && distB <= 0.0f && isInPortalBounds(camera.position, *gPortalB)) {
-                    teleportPlayer(*gPortalB, *gPortalA);
-                    teleportCooldown = 0.3f;
-                    prevDistA = portalSignedDist(camera.position, *gPortalA);
-                    prevDistB = portalSignedDist(camera.position, *gPortalB);
-                }
-                else {
-                    prevDistA = distA;
-                    prevDistB = distB;
-                }
+
+                // ALWAYS update tracking, even during cooldown, so distances
+                // are never stale when cooldown expires.
+                prevDistA = distA;
+                prevDistB = distB;
             }
         }
 
         // ----- Get framebuffer size -----
         glfwGetFramebufferSize(window, &fbW, &fbH);
         float aspect = (fbH > 0) ? (float)fbW / fbH : 1.0f;
-        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), aspect, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), aspect, 0.05f, 100.0f);
         glm::mat4 view = camera.getViewMatrix();
 
         // Pre-compute both virtual cameras and projections (needed for inner portal UVs)
@@ -724,9 +757,14 @@ int main() {
             glm::vec4 vp = glm::transpose(glm::inverse(pv)) * wp;
             float nLen = glm::length(glm::vec3(vp));
             float dist = glm::abs(vp.w) / nLen;
-            if (dist < 0.2f) {
-                float sign = (vp.w >= 0.0f) ? 1.0f : -1.0f;
-                vp.w = sign * 0.2f * nLen;
+            if (dist < 0.5f) {
+                // Virtual camera is very close to the clip portal (always the
+                // case in our setup).  Oblique clipping this close distorts
+                // the projection and clips nearby geometry (floor, walls),
+                // causing black artifacts.  Since the wall behind the portal
+                // is behind the camera at this range, regular projection is
+                // correct and artifact-free.
+                return projection;
             }
             return obliqueProjection(projection, vp);
         };
@@ -912,13 +950,15 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // --- Step 1: Mark portal stencil AND write portal depth ---
-        // The portal depth in the z-buffer lets the scene depth-test against
-        // it: objects closer than the portal can occlude it, objects behind
-        // (the wall) cannot.
+        // Flat quad marks stencil at the exact portal boundary.
+        // Depth clamp ensures behind-camera fragments still mark stencil
+        // when the camera is at or past the portal surface.
+        // The walls have holes cut where portals are, so even if stencil
+        // isn't perfectly marked edge-on, no wall shows through.
         glEnable(GL_STENCIL_TEST);
         glEnable(GL_DEPTH_CLAMP);
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no color
-        glDepthMask(GL_TRUE);                                 // YES depth
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glDepthMask(GL_TRUE);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
         glBindVertexArray(portalQuadVAO);
@@ -979,17 +1019,22 @@ int main() {
 
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
-        glDisable(GL_STENCIL_TEST);
 
         // --- Step 4: Draw portal borders on top ---
-        glEnable(GL_DEPTH_CLAMP);
+        // Drawn after FBO fill. Use GL_NOTEQUAL so the border only
+        // appears at the frame edges (where stencil was zeroed by the
+        // scene or was never marked by the flat quad).
         glBindVertexArray(portalQuadVAO);
         shader.use();
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         glBindTexture(GL_TEXTURE_2D, whiteTex);
 
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
         for (auto* p : { &portalA, &portalB }) {
+            int stencilVal = (p == &portalA) ? 1 : 2;
+            glStencilFunc(GL_NOTEQUAL, stencilVal, 0xFF);
             glm::mat4 bm = p->getModelMatrix();
             bm = bm * glm::scale(glm::mat4(1.0f), glm::vec3(1.12f, 1.06f, 1.0f));
             bm[3] -= glm::vec4(p->normal * 0.005f, 0.0f);
@@ -997,7 +1042,8 @@ int main() {
             shader.setVec3("tint", p->color);
             glDrawArrays(GL_TRIANGLES, 0, portalQuadVertCount);
         }
-        glDisable(GL_DEPTH_CLAMP);
+
+        glDisable(GL_STENCIL_TEST);
 
         // ===== 2D OVERLAY (FPS + Console) =====
         textRenderer.begin(fbW, fbH);
