@@ -2,6 +2,9 @@
 
 A custom 3D game engine built from scratch in C++17 and OpenGL 3.3, featuring a Portal-inspired rendering system with recursive see-through portals and seamless walk-through teleportation.
 
+![Main game](images/main_game.png)
+![Dev console](images/console.png)
+
 ## Overview
 
 EngineMax is a from-scratch game engine focused on implementing portal rendering techniques similar to Valve's Portal. The engine handles all rendering, physics, input, and UI without relying on any high-level game framework -- just raw OpenGL, GLFW for windowing, and GLM for math.
