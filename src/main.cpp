@@ -516,6 +516,70 @@ static void renderScene(Shader& shader, const glm::mat4& view, const glm::mat4& 
 }
 
 // ---------------------------------------------------------------
+// Cube-man player model (placeholder until a real model is loaded)
+// ---------------------------------------------------------------
+
+struct BodyPart {
+    glm::vec3 offset;  // relative to feet position
+    glm::vec3 scale;   // cube scale
+    glm::vec3 color;
+};
+
+static const BodyPart playerBodyParts[] = {
+    // Head
+    { {0.0f, 1.575f, 0.0f}, {0.30f, 0.30f, 0.30f}, {0.87f, 0.72f, 0.58f} },
+    // Torso
+    { {0.0f, 1.10f, 0.0f},  {0.40f, 0.60f, 0.22f}, {0.20f, 0.38f, 0.65f} },
+    // Left arm
+    { {-0.31f, 1.10f, 0.0f},{0.14f, 0.58f, 0.14f}, {0.20f, 0.38f, 0.65f} },
+    // Right arm
+    { {0.31f, 1.10f, 0.0f}, {0.14f, 0.58f, 0.14f}, {0.20f, 0.38f, 0.65f} },
+    // Left leg
+    { {-0.10f, 0.40f, 0.0f},{0.16f, 0.78f, 0.16f}, {0.28f, 0.28f, 0.32f} },
+    // Right leg
+    { {0.10f, 0.40f, 0.0f}, {0.16f, 0.78f, 0.16f}, {0.28f, 0.28f, 0.32f} },
+};
+static const int playerPartCount = sizeof(playerBodyParts) / sizeof(playerBodyParts[0]);
+
+// Draw the cube-man at the player's position, rotated to face camera yaw.
+// Only called during portal FBO passes (never in main pass -- first-person).
+static void drawPlayerModel(Shader& shader, const glm::mat4& view,
+                            const glm::mat4& projection,
+                            GLuint cubeVAO, int cubeVertCount, GLuint whiteTex,
+                            const glm::vec3& playerPos, float yawDegrees)
+{
+    // Skip rendering if the player is too close to the virtual camera
+    // (prevents seeing your own model from your own viewpoint).
+    glm::mat4 invView = glm::inverse(view);
+    glm::vec3 camPos  = glm::vec3(invView[3]);
+    if (glm::length(playerPos - camPos) < 1.5f)
+        return;
+
+    shader.use();
+    shader.setMat4("view", view);
+    shader.setMat4("projection", projection);
+
+    glBindVertexArray(cubeVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, whiteTex);
+
+    // Root transform: translate to feet, rotate by yaw
+    glm::vec3 feetPos = playerPos - glm::vec3(0.0f, EYE_HEIGHT, 0.0f);
+    glm::mat4 root = glm::translate(glm::mat4(1.0f), feetPos);
+    root = glm::rotate(root, glm::radians(yawDegrees + 90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    for (int i = 0; i < playerPartCount; ++i) {
+        const auto& part = playerBodyParts[i];
+        glm::mat4 model = root;
+        model = glm::translate(model, part.offset);
+        model = glm::scale(model, part.scale);
+        shader.setMat4("model", model);
+        shader.setVec3("tint", part.color);
+        glDrawArrays(GL_TRIANGLES, 0, cubeVertCount);
+    }
+}
+
+// ---------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------
 
@@ -718,10 +782,12 @@ int main() {
                 float distB = portalSignedDist(camera.position, *gPortalB);
 
                 if (teleportCooldown <= 0.0f) {
+                    bool didTeleport = false;
                     // Crossed portal A? (positive → negative = walked through from room side)
                     if (prevDistA > 0.0f && distA <= 0.0f && isInPortalBounds(camera.position, *gPortalA)) {
                         teleportPlayer(*gPortalA, *gPortalB);
                         teleportCooldown = 0.15f;
+                        didTeleport = true;
                         // Re-sample after teleport so prevDist is fresh at new location
                         distA = portalSignedDist(camera.position, *gPortalA);
                         distB = portalSignedDist(camera.position, *gPortalB);
@@ -730,8 +796,28 @@ int main() {
                     else if (prevDistB > 0.0f && distB <= 0.0f && isInPortalBounds(camera.position, *gPortalB)) {
                         teleportPlayer(*gPortalB, *gPortalA);
                         teleportCooldown = 0.15f;
+                        didTeleport = true;
                         distA = portalSignedDist(camera.position, *gPortalA);
                         distB = portalSignedDist(camera.position, *gPortalB);
+                    }
+
+                    // After teleportation, the player is at the destination
+                    // portal.  Wall clamping already ran with stale nearPortal
+                    // flags (computed from the pre-teleport position), so
+                    // re-run it with fresh flags to avoid a one-frame jolt.
+                    if (didTeleport) {
+                        bool npA = isPlayerInPortalZone(camera.position, *gPortalA);
+                        bool npB = isPlayerInPortalZone(camera.position, *gPortalB);
+
+                        if (camera.position.x < minX) camera.position.x = minX;
+                        if (camera.position.x > maxX && !npB) camera.position.x = maxX;
+                        if (camera.position.z < minZ && !npA) camera.position.z = minZ;
+                        if (camera.position.z > maxZ) camera.position.z = maxZ;
+
+                        if (npA && camera.position.z < -ROOM_HALF)
+                            camera.position.z = -ROOM_HALF;
+                        if (npB && camera.position.x > ROOM_HALF)
+                            camera.position.x = ROOM_HALF;
                     }
                 }
 
@@ -816,6 +902,9 @@ int main() {
 
             renderScene(shader, portalViewA, portalProjA, roomVAO, cubeVAO,
                         floorTex, wallTex, ceilTex, cubeTex);
+            drawPlayerModel(shader, portalViewA, portalProjA,
+                            cubeVAO, cubeVertCount, whiteTex,
+                            camera.position, camera.yaw);
 
             // Step 3: Clear depth where stencil = 1 (inner portal area)
             // so the second-level scene can render there with correct depth.
@@ -839,6 +928,9 @@ int main() {
             // Step 4: Render second-level scene into inner portal area
             renderScene(shader, secondViewA, secondProjA, roomVAO, cubeVAO,
                         floorTex, wallTex, ceilTex, cubeTex);
+            drawPlayerModel(shader, secondViewA, secondProjA,
+                            cubeVAO, cubeVertCount, whiteTex,
+                            camera.position, camera.yaw);
 
             // Step 5: Draw source portal's border.
             // Use stencil to prevent border from drawing INSIDE the inner
@@ -898,6 +990,9 @@ int main() {
 
             renderScene(shader, portalViewB, portalProjB, roomVAO, cubeVAO,
                         floorTex, wallTex, ceilTex, cubeTex);
+            drawPlayerModel(shader, portalViewB, portalProjB,
+                            cubeVAO, cubeVertCount, whiteTex,
+                            camera.position, camera.yaw);
 
             // Step 3: Clear depth where stencil = 1
             glStencilFunc(GL_EQUAL, 1, 0xFF);
@@ -920,6 +1015,9 @@ int main() {
             // Step 4: Render second-level scene into inner portal area
             renderScene(shader, secondViewB, secondProjB, roomVAO, cubeVAO,
                         floorTex, wallTex, ceilTex, cubeTex);
+            drawPlayerModel(shader, secondViewB, secondProjB,
+                            cubeVAO, cubeVertCount, whiteTex,
+                            camera.position, camera.yaw);
 
             // Step 5: Draw source portal's border.
             // Use stencil to prevent border from drawing INSIDE the inner
@@ -1045,8 +1143,31 @@ int main() {
 
         glDisable(GL_STENCIL_TEST);
 
-        // ===== 2D OVERLAY (FPS + Console) =====
+        // ===== 2D OVERLAY (FPS + Crosshair + Console) =====
         textRenderer.begin(fbW, fbH);
+
+        // Crosshair (only when console is closed)
+        if (!console.isOpen()) {
+            float cx = fbW * 0.5f;
+            float cy = fbH * 0.5f;
+            float gap   = 3.0f;
+            float len   = 10.0f;
+            float thick = 2.0f;
+            glm::vec4 chColor(1.0f, 1.0f, 1.0f, 0.85f);
+
+            // Left
+            textRenderer.drawRect(cx - gap - len, cy - thick * 0.5f,
+                                  len, thick, chColor);
+            // Right
+            textRenderer.drawRect(cx + gap, cy - thick * 0.5f,
+                                  len, thick, chColor);
+            // Top
+            textRenderer.drawRect(cx - thick * 0.5f, cy - gap - len,
+                                  thick, len, chColor);
+            // Bottom
+            textRenderer.drawRect(cx - thick * 0.5f, cy + gap,
+                                  thick, len, chColor);
+        }
 
         // FPS counter
         if (console.showFps()) {
